@@ -9,6 +9,8 @@ import { Navbar } from '@/components/Navbar';
 import { ToastProvider } from '@/components/ToastProvider';
 import { ThemeProvider } from '@/components/ThemeProvider';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { MisconfiguredPage } from '@/components/MisconfiguredPage';
+import { validateEnv } from '@/lib/env';
 import { locales } from '@/i18n';
 
 const geistSans = Geist({
@@ -32,6 +34,18 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Fail fast: validate required environment variables before rendering anything.
+  // This runs server-side only; no secret values are forwarded to the client.
+  const envResult = validateEnv();
+  if (!envResult.ok) {
+    return (
+      <MisconfiguredPage
+        missing={envResult.missing}
+        invalid={envResult.invalid}
+      />
+    );
+  }
+
   // Providing all messages to the client
   // side is the easiest way to get started
   const messages = await getMessages();

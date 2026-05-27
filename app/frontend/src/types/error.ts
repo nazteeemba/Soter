@@ -1,4 +1,4 @@
-export type ErrorCategory = 'wallet' | 'network' | 'server' | 'unknown';
+export type ErrorCategory = 'wallet' | 'network' | 'server' | 'config' | 'unknown';
 
 export interface ErrorMetadata {
   title: string;
@@ -42,6 +42,21 @@ export const ERROR_METADATA: Record<ErrorCategory, ErrorMetadata> = {
     ],
     remediation: 'We\'re working on it. Please try again in a few minutes.',
     canRetry: true,
+  },
+  config: {
+    title: 'Misconfigured deployment',
+    description:
+      'Required environment variables are missing or have an invalid value. ' +
+      'This deployment is not correctly configured and cannot run.',
+    hints: [
+      'Set NEXT_PUBLIC_API_URL to the full backend URL (e.g. https://api.soter.app)',
+      'Set NEXT_PUBLIC_STELLAR_NETWORK to testnet, mainnet, or futurenet',
+      'On Vercel: add the variables under Project → Settings → Environment Variables',
+      'After updating variables, redeploy the project for them to take effect',
+    ],
+    remediation:
+      'Add the missing environment variables to your deployment platform and redeploy.',
+    canRetry: false,
   },
   unknown: {
     title: 'Unexpected system error',

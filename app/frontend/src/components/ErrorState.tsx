@@ -9,7 +9,8 @@ import {
   RefreshCcw, 
   Home, 
   ChevronRight,
-  Info
+  Info,
+  Settings2
 } from 'lucide-react';
 import { ERROR_METADATA, ErrorCategory } from '@/types/error';
 import { categorizeError } from '@/lib/error-utils';
@@ -40,6 +41,7 @@ export function ErrorState({
     wallet: Wallet,
     network: WifiOff,
     server: ServerCrash,
+    config: Settings2,
     unknown: AlertTriangle,
   }[category];
 
@@ -60,6 +62,7 @@ export function ErrorState({
               category === 'wallet' ? 'border-amber-400/30 from-amber-400/20 to-amber-400/5 text-amber-400' :
               category === 'network' ? 'border-cyan-400/30 from-cyan-400/20 to-cyan-400/5 text-cyan-400' :
               category === 'server' ? 'border-rose-400/30 from-rose-400/20 to-rose-400/5 text-rose-400' :
+              category === 'config' ? 'border-orange-400/30 from-orange-400/20 to-orange-400/5 text-orange-400' :
               'border-slate-400/30 from-slate-400/20 to-slate-400/5 text-slate-400'
             }`}>
               <CategoryIcon size={32} strokeWidth={1.5} />
@@ -151,10 +154,10 @@ export function ErrorState({
       {/* Footer Support Hub */}
       <div className="absolute bottom-8 left-0 right-0 z-10 flex justify-center px-4">
         <Link 
-          href="/support"
+          href="/help"
           className="group flex items-center gap-2 text-xs font-medium text-slate-500 transition-colors hover:text-slate-300"
         >
-          Still having issues? Contact Support
+          Need help? Visit the Guide
           <ChevronRight size={14} className="transition-transform group-hover:translate-x-1" />
         </Link>
       </div>

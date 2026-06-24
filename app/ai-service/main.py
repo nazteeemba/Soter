@@ -114,6 +114,14 @@ async def lifespan(app: FastAPI):
     logger.info(f"Redis configured: {settings.redis_url}")
     logger.info(f"Backend webhook URL: {settings.backend_webhook_url}")
 
+    # Initialize cache service
+    from services.cache import CacheService
+    app.state.cache = CacheService(settings)
+    if app.state.cache.enabled:
+        logger.info("Response caching enabled with Redis")
+    else:
+        logger.warning("Response caching disabled (Redis unavailable)")
+
     yield
     logger.info("Shutting down Soter AI Service...")
 

@@ -9,6 +9,8 @@ from fastapi import APIRouter, BackgroundTasks, HTTPException
 from pydantic import BaseModel
 
 import tasks
+from services.cache import cached_response
+from config import settings
 
 logger = logging.getLogger(__name__)
 
@@ -90,6 +92,7 @@ async def get_job_status(task_id: str):
     return await _get_task_status(task_id)
 
 
+@cached_response(prefix="task_status", ttl_seconds=settings.cache_ttl_task_status)
 async def _get_task_status(task_id: str):
     logger.info(f"Checking status for task: {task_id}")
 

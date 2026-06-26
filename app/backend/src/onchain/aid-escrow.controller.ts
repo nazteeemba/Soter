@@ -27,6 +27,7 @@ import {
   BatchCreateAidPackagesDto,
 } from './dto/aid-escrow.dto';
 import { SorobanErrorMapper } from './utils/soroban-error.mapper';
+import { PrismaService } from '../prisma/prisma.service';
 
 /**
  * AidEscrowController
@@ -39,7 +40,10 @@ export class AidEscrowController {
   private readonly logger = new Logger(AidEscrowController.name);
   private readonly errorMapper = new SorobanErrorMapper();
 
-  constructor(private readonly aidEscrowService: AidEscrowService) {}
+  constructor(
+    private readonly aidEscrowService: AidEscrowService,
+    private readonly prisma: PrismaService,
+  ) {}
 
   /**
    * Create a single aid package
@@ -281,7 +285,15 @@ export class AidEscrowController {
   })
   async getAidPackage(@Param('id') packageId: string): Promise<any> {
     try {
-      return await this.aidEscrowService.getAidPackage({ packageId });
+      const [onchainPkg, onChainEvents] = await Promise.all([
+        this.aidEscrowService.getAidPackage({ packageId }),
+        this.prisma.onChainEvent.findMany({
+          where: { packageId },
+          select: { txHash: true, ledger: true, topic: true, correlatedAt: true },
+          orderBy: { ledger: 'asc' },
+        }),
+      ]);
+      return { ...onchainPkg, onChainEvents };
     } catch (error) {
       this.logger.error('Failed to get aid package:', error);
       this.errorMapper.throwMappedError(error);

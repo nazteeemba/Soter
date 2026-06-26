@@ -1,6 +1,7 @@
 import { Module, Provider } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { BullModule } from '@nestjs/bullmq';
+import { SchedulerRegistry } from '@nestjs/schedule';
 import { OnchainAdapter, ONCHAIN_ADAPTER_TOKEN } from './onchain.adapter';
 export { ONCHAIN_ADAPTER_TOKEN };
 import { MockOnchainAdapter } from './onchain.adapter.mock';
@@ -13,6 +14,9 @@ import { LedgerAdminController } from './ledger-admin.controller';
 import { JobsModule } from '../jobs/jobs.module';
 import { LoggerModule } from '../logger/logger.module';
 import { MetricsModule } from '../observability/metrics/metrics.module';
+import { EventCorrelationService } from './event-correlation/event-correlation.service';
+import { EventCorrelationController } from './event-correlation/event-correlation.controller';
+import { EventMapper } from './event-correlation/event-mapper';
 
 /**
  * Factory function to create the appropriate adapter based on configuration
@@ -59,7 +63,7 @@ const onchainAdapterProvider: Provider = {
     LoggerModule,
     MetricsModule,
   ],
-  controllers: [LedgerAdminController],
+  controllers: [LedgerAdminController, EventCorrelationController],
   providers: [
     MockOnchainAdapter,
     SorobanAdapter,
@@ -68,12 +72,16 @@ const onchainAdapterProvider: Provider = {
     OnchainService,
     LedgerBackfillService,
     LedgerReconciliationService,
+    EventCorrelationService,
+    EventMapper,
+    SchedulerRegistry,
   ],
   exports: [
     ONCHAIN_ADAPTER_TOKEN,
     OnchainService,
     LedgerBackfillService,
     LedgerReconciliationService,
+    EventCorrelationService,
   ],
 })
 export class OnchainModule {}
